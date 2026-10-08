@@ -19,7 +19,11 @@
 ![University](https://img.shields.io/badge/University_of_Pisa-M.Sc._Project-003B71)
 ![Grade](https://img.shields.io/badge/Final_Grade-30%2F30-16803C)
 
-[Read the report](Report/Report.pdf) · [Explore the solver](lasso_ipm_solver.py) · [Explore the experiments](experimental_suite.py)
+![Algorithm 1: Mehrotra's predictor–corrector interior-point method for the constrained Lasso quadratic program, including KKT residuals, affine prediction, adaptive centering, second-order correction, and fraction-to-the-boundary updates](solver_pseudo_code.png)
+
+*The solver's algorithmic core, from initialization to the final coefficient vector. [Open the full-resolution pseudocode](solver_pseudo_code.png).*
+
+[Read the report](Report/Report.pdf) · [View the algorithm](solver_pseudo_code.png) · [Explore the solver](lasso_ipm_solver.py) · [Explore the experiments](experimental_suite.py)
 
 </div>
 
@@ -69,9 +73,13 @@ Each Mehrotra iteration follows five steps:
 
 1. **Measure optimality:** compute primal and dual feasibility residuals and the complementarity measure $\mu$.
 2. **Predict:** solve an affine-scaling Newton system to estimate the direction toward the boundary.
-3. **Correct:** incorporate second-order complementarity terms and adaptive centering.
-4. **Update:** apply separate primal and dual step lengths using the fraction-to-the-boundary rule.
+3. **Correct:** use the predictor to set the adaptive centering parameter $\sigma_k=(\mu_{\mathrm{aff}}/\mu_k)^3$, then incorporate second-order complementarity terms into the combined Newton direction.
+4. **Update:** apply separate primal and dual step lengths using the fraction-to-the-boundary rule, preserving the positivity of the primal variables, slacks, and dual multipliers.
 5. **Monitor:** record convergence history, regularization, step sizes, and numerical events.
+
+### Algorithm 1 — Mehrotra's predictor–corrector IPM
+
+The complete pseudocode makes the mathematical workflow explicit: **an affine predictor estimates the attainable reduction in complementarity, and a second-order corrector combines that prediction with adaptive centering**. Both directions use the current KKT Jacobian $J(w_k)$; separate primal and dual updates keep the iterates strictly positive. The algorithm stops when primal feasibility, dual feasibility, and complementarity satisfy the prescribed tolerance, then recovers the Lasso coefficients as $x^*=u_k-v_k$.
 
 Eliminating slack and dual directions reduces the Newton equations to a **symmetric positive definite system of size $2n\times2n$**, composed of a quadratic Hessian, a diagonal complementarity term, and a rank-one budget contribution.
 
@@ -124,6 +132,7 @@ The experimental suite sweeps ten logarithmically spaced budgets per dataset, ex
 ├── lasso_ipm_solver.py                 # Custom Mehrotra predictor–corrector solver
 ├── experimental_suite.py               # Dataset loading, benchmarks, and plots
 ├── environment.yml                     # Original Conda environment export
+├── solver_pseudo_code.png              # Full Mehrotra predictor–corrector pseudocode
 ├── Dataset/
 │   ├── imdb_processed.csv.zip          # Processed IMDb dataset
 │   └── readme.txt                      # Dataset extraction instructions
