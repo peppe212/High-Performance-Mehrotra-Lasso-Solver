@@ -1,0 +1,1 @@
+To make the dataset work, just unzip it and don't change the name, file should just be "imdb_processed.csv" and leave it in the "Dataset" folder.
